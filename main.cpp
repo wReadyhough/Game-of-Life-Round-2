@@ -9,6 +9,8 @@ int main(){
   Board theBoard(rows, cols, numPred, numPrey);
   theBoard.printBoard();
   while(theBoard.numPrey() > 0 && theBoard.numPredators() > 0){
+    usleep(2000000);
+    system("clear");
     cout<<"Updating board..."<<endl;
     theBoard.update();
     cout<<"Board looks like: "<<endl;

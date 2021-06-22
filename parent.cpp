@@ -143,7 +143,7 @@ void Board::addPredPrey(int numPredator, int numPrey){
       numPrey--;
     }
   }
-  cout<<"Board now has "<<m_predators.size()<<" predators and "<<m_prey.size()<<" prey."<<endl;
+  //cout<<"Board now has "<<m_predators.size()<<" predators and "<<m_prey.size()<<" prey."<<endl;
 }
 
 //Predators desiplayed as X, Prey as O, nothing as -
@@ -189,7 +189,7 @@ void Board::update(){
     newRow = prevRow;
     newCol = prevCol;
 
-    canMove = move(newRow, newCol);
+    canMove = moveOrEat(newRow, newCol,2);
 
     //Prey Can Move.
     if(canMove == true){
@@ -221,7 +221,7 @@ void Board::update(){
     prevCol = m_predators[i].getCol();
     newRow = prevRow;
     newCol = prevCol;
-    canMove = move(newRow, newCol);
+    canMove = moveOrEat(newRow, newCol,2);
 
     //Predator can move
     if(canMove == true){
@@ -239,7 +239,7 @@ void Board::update(){
     newRow = m_predators[i].getRow();
     newCol = m_predators[i].getCol();
     //news will hold the location of the prey to be eaten, in the event that true is returned
-    canEat = eat(newRow, newCol);
+    canEat = moveOrEat(newRow, newCol,0);
 
     //Predator has a prey to eat.
     if(canEat == true){
@@ -262,49 +262,35 @@ void Board::update(){
       currPredSize--;
     }
   }
+  //There are no empty spaces on the board at end of this update, randomly clear half the board.
+  if((numPredators() + numPrey()) >= (m_yDim * m_xDim)){
+    overPopulation(((m_yDim * m_xDim)/2));
+  }
   cout<<"Finished updating with "<<m_predators.size()<<" predators and "<<m_prey.size()<<" prey."<<endl;
 }
 
+//FOR Move
 //If it finds an open space, sets pointers to the coords of that space. 
 //If not, pointers should still point to prey's initial spot
-//void Board::preyMove(int *row, int *col){
-  bool Board::move(int &row, int &col){
-  //int r = *row;
-  //int c = *col;
+//FOR EAT
+//If the predator has a prey available for consumption,
+//Changes the arguments to the prey's location and returns true
+//Otherwise, returns false.
+  bool Board::moveOrEat(int &row, int &col, int findMe){
   int r = row;
   int c = col;
   for(int y = -1; y <2;y++ ){
     for(int x = -1; x < 2; x++){
       if((y+r) < 0 || (y+r) >= m_yDim ){
-        /*cout<<"skipping row "<<y+r;
-        if((y + r) < 0){
-          cout<<" --> "<<y<<" + "<<r<<" < 0"<<endl;
-        }
-        else if((y + r) >= m_yDim){
-          cout<<" --> "<<y<<" + "<<r<<" >= "<<m_yDim<<endl;
-        }
-        else{
-          cout<<"what the fuck row"<<endl;
-        }*/
         continue;
       }
       if((x+c)<0 || (x+c) >= m_xDim){
-        /*cout<<"skipping col "<<x+c;
-        if((x + c) < 0){
-          cout<<" --> "<<x<<" + "<<c<<" < 0"<<endl;
-        }
-        else if((x + c) >= m_xDim){
-          cout<<" --> "<<x<<" + "<<c<<" >= "<<m_xDim<<endl;
-        }
-        else{
-          cout<<"what the fuck col"<<endl;
-        }*/
+
         continue;
       }
-      if(m_board[y+r][x+c] == 2){
+      if(m_board[y+r][x+c] == findMe){
         row = y + r;
         col = x + c;
-        //cout<<"row "<<row<<" col "<<col<<endl;
         return true;
       }
     }
@@ -312,34 +298,7 @@ void Board::update(){
   return false;
 }
 
-//If the predator has a prey available for consumption,
-//Changes the arguments to the prey's location and returns true
-//Otherwise, returns false.
-//Literally just the move function implemented to look for 0 instead of 2.
-//Can definitely combine the two into one function later.
-bool Board::eat(int &predRow, int &predCol){
-  int r = predRow;
-  int c = predCol;
-  for(int y = -1; y <2;y++ ){
-    for(int x = -1; x < 2; x++){
-      if((y+r) < 0 || (y+r) >= m_yDim ){
-        continue;
-      }
-      if((x+c)<0 || (x+c) >= m_xDim){
-        continue;
-      }
-      if(m_board[y+r][x+c] == 0){
-        predRow = y + r;
-        predCol = x + c;
-        return true;
-      }
-    }
-  }
-  return false;
 
-
-  return 0;
-}
 
 //will remove the prey from the vector.
 //Returns the prey's health
@@ -364,4 +323,54 @@ int Board::numPrey(){
 
 int Board::numPredators(){
   return m_predators.size();
+}
+
+void Board::overPopulation(int killAmount){
+  //Want to kill more predators than prey, as it is easier for predators to be born.
+  int kPredAmount = killAmount * .75;
+  int kPreyAmount = killAmount * .25;
+  bool breakWhile = false;
+  int removeRow, removeCol,removeIndx;
+
+  //Making sure we don't kill more of a creature than we have
+  while(!breakWhile){
+    breakWhile = true;
+    if(kPreyAmount > m_prey.size()){
+      kPreyAmount = kPreyAmount/2;
+      breakWhile = false;
+    }
+    if(kPredAmount>m_predators.size()){
+      kPredAmount = kPredAmount/2;
+      breakWhile = false;
+    }
+  }
+
+//Remove Predators
+  for(int i = 0; i < kPredAmount; i++){
+    removeIndx = rand() % m_predators.size();
+    removeRow = m_predators[removeIndx].getRow();
+    removeCol = m_predators[removeIndx].getCol();
+    m_board[removeRow][removeCol] = 2;
+    m_predators.erase(m_predators.begin()+removeIndx);
+  }
+
+//Remove Prey
+  for(int i = 0; i < kPreyAmount; i++){
+    removeIndx = rand() % m_prey.size();
+    removeRow = m_prey[removeIndx].getRow();
+    removeCol = m_prey[removeIndx].getCol();
+    m_board[removeRow][removeCol] = 2;
+    m_prey.erase(m_prey.begin()+removeIndx);
+  }
+
+  cout<<"Half of the creatures have been removed from the board due to overPopulation!"<<endl;
+
+  //Ensure ther eare still a decent amount of prey on the board.
+  if(numPrey() <= (m_xDim * m_yDim / 8)){
+    while(numPrey() <= (m_xDim * m_yDim / 4)){
+      addPredPrey(0,1);
+    }
+  }
+
+  
 }

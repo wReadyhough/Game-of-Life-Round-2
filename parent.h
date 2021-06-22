@@ -60,11 +60,11 @@ class Board: public Parent{
     void addPredPrey(int, int);
     //void sort();// Function to sort Predators and prey but their row, then column. For easier access.
     void printBoard();
-    bool eat(int &, int &);
     void update();
     //void preyMove(int*, int*);//
-    bool move (int &, int &);
+    bool moveOrEat(int &, int &, int);
     int removePrey(int, int);
     int numPrey();
     int numPredators();
+    void overPopulation(int);
 };
