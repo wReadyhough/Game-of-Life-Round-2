@@ -8,7 +8,7 @@ using namespace std;
 //0/O is Prey 1/X is Predator
 
 const int START_PREDATOR_HEALTH = 7;
-const int START_PREY_HEALTH = 7;
+const int START_PREY_HEALTH = 5;
 const int PREY_REPRODUCTION_THRESHOLD = 10;
 
 //Might be easier to make predator & prey classes friend classes.
@@ -67,4 +67,5 @@ class Board: public Parent{
     int numPrey();
     int numPredators();
     void overPopulation(int);
+    void governmentIntervention();
 };
