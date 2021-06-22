@@ -262,11 +262,14 @@ void Board::update(){
       currPredSize--;
     }
   }
-  //There are no empty spaces on the board at end of this update, randomly clear half the board.
-  if((numPredators() + numPrey()) >= (m_yDim * m_xDim)){
+  //90% of the board is an object, randomly clear half the board.
+  if((numPredators() + numPrey()) >= (m_yDim * m_xDim*.9)){
     overPopulation(((m_yDim * m_xDim)/2));
   }
   cout<<"Finished updating with "<<m_predators.size()<<" predators and "<<m_prey.size()<<" prey."<<endl;
+  if(numPrey() == 0){
+    governmentIntervention();
+  }
 }
 
 //FOR Move
@@ -371,6 +374,32 @@ void Board::overPopulation(int killAmount){
       addPredPrey(0,1);
     }
   }
+}
 
-  
+void Board::governmentIntervention(){
+  bool intervention = true;
+  string govLove = "yes";
+  system("clear");
+  cout<<"HELLO USER, IT SEEMS ALL YOUR SHEEP HAVE DIED!"<<endl;
+  usleep(10000000);
+  system("clear");
+  cout<<"BUT DON'T WORRY. THE GOVERNMENT WILL HELP YOU."<<endl;
+  usleep(10000000);
+  system("clear");
+  cout<<"Enter \"yes\" if you want government help. Anything else will signify you want the government's help.  ";
+  cin>>govLove;
+
+  if(govLove == "yes"){
+    cout<<"GOOD CHOICE."<<endl;
+    usleep(1000000);
+    system("clear");
+  }
+  else{
+    cout<<"TO BAD. THE GOVERNMENT KNOWS WHAT'S BEST."<<endl;
+    usleep(1000000);
+    system("clear");
+  }
+  while(numPrey() <= (m_xDim * m_yDim / 4)){
+      addPredPrey(0,1);
+  }
 }
