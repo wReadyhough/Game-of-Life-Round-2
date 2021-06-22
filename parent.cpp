@@ -45,26 +45,28 @@ Predator::Predator(int row, int col){
 }
 
 //returns true if now dead.
-//passed the health of the prey it just ate, or 0 for didn't eat.
+//passed the health of the prey it just ate, 0 for didn't eat, or -1 for error finding prey to remove.
 bool Predator::updateHealth(int healthIncrease){
-  // cout<<"In predator update health."<<endl;
-  //Has a health increase
-  int myHealth = this->getHealth();
-  // cout<<"current health is: "<<myHealth<<endl;
-  //Ate, change health.
-  if(healthIncrease){
-    // cout<<"Increasing health by "<<healthIncrease<<endl;
-    setHealth(myHealth + healthIncrease);
-  }
-  //Didn't eat. Decrease health by one and check if dead
-  else{
-    // cout<<"Decreasing health by 1"<<endl;
-      setHealth(myHealth -1);
+  if(healthIncrease == -1){
+    cout<<"Error! Couldn't Find the desired prey to remove!"<<endl;
+    throw 20;
   }
 
-  //check if dead.
-  //is not dead
-  // cout<<"New health is: "<<getHealth()<<endl;
+  //Didn't eat, decrement health.
+  else if(healthIncrease == 0){
+    setHealth(getHealth() - 1);
+  }
+  else{
+    setHealth(getHealth() + healthIncrease);
+  }
+
+  //Making sure we didn't access a destroyed object's health.
+  if(getHealth() < -1){
+    cout<<"Error! Accessed destroyed object's health!"<<endl;
+    throw 20;
+  }
+
+  //Checking for deadness
   if(getHealth() > 0){
     return false;
   }
@@ -172,7 +174,7 @@ void Board::printBoard(){
 void Board::update(){
   //News hold where predator/prey will move to. Prevs hold where it was.
   int prevRow = 0, newRow = 0, prevCol = 0,  newCol = 0;
-  bool canMove = false, canEat = false;
+  bool canMove = false, canEat = false, hasDied = false;
   int currPredSize = 0;//Restricts new predators from eating.
   int preyHealth = 0;
 
@@ -244,8 +246,20 @@ void Board::update(){
       //Putting a new predator at the prey's location.
       m_board[newRow][newCol] = 1;
       m_predators.push_back(Predator(newRow,newCol));
-      removePrey(newRow,newCol);
+      preyHealth = removePrey(newRow,newCol);
+      hasDied = m_predators[i].updateHealth(preyHealth);
+    }
+    //Didn't eat, decrease health
+    else{
+      hasDied = m_predators[i].updateHealth(0);
+    }
+    //check if dead.
+    if(hasDied == true){
       
+      m_board[m_predators[i].getRow()][m_predators[i].getCol()] = 2;
+      m_predators.erase(m_predators.begin() + i);
+      i--;
+      currPredSize--;
     }
   }
   cout<<"Finished updating with "<<m_predators.size()<<" predators and "<<m_prey.size()<<" prey."<<endl;

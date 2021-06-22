@@ -4,15 +4,17 @@
 
 int main(){
   srand(time(NULL));
-  int rows = 5, cols = 5, numPred = 6, numPrey = 8;
+  int rows = 10, cols = 10, numPred = 6, numPrey = 8;
   cout<<"Making board with "<<rows<<" rows, "<<cols<<" cols, "<<numPred<<" predators, and "<<numPrey<<" prey."<<endl;
   Board theBoard(rows, cols, numPred, numPrey);
-  cout<<"Board looks like: "<<endl;
   theBoard.printBoard();
-  cout<<"Updating board..."<<endl;
-  theBoard.update();
-  theBoard.printBoard();
-  
+  while(theBoard.numPrey() > 0 && theBoard.numPredators() > 0){
+    cout<<"Updating board..."<<endl;
+    theBoard.update();
+    cout<<"Board looks like: "<<endl;
+    theBoard.printBoard();
+    
+  }
 
 
   
