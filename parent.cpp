@@ -244,7 +244,7 @@ void Board::update(){
       //Putting a new predator at the prey's location.
       m_board[newRow][newCol] = 1;
       m_predators.push_back(Predator(newRow,newCol));
-
+      removePrey(newRow,newCol);
       
     }
   }
@@ -304,8 +304,8 @@ void Board::update(){
 //Literally just the move function implemented to look for 0 instead of 2.
 //Can definitely combine the two into one function later.
 bool Board::eat(int &predRow, int &predCol){
-  int r = row;
-  int c = col;
+  int r = predRow;
+  int c = predCol;
   for(int y = -1; y <2;y++ ){
     for(int x = -1; x < 2; x++){
       if((y+r) < 0 || (y+r) >= m_yDim ){
@@ -315,8 +315,8 @@ bool Board::eat(int &predRow, int &predCol){
         continue;
       }
       if(m_board[y+r][x+c] == 0){
-        row = y + r;
-        col = x + c;
+        predRow = y + r;
+        predCol = x + c;
         return true;
       }
     }
@@ -327,9 +327,21 @@ bool Board::eat(int &predRow, int &predCol){
   return 0;
 }
 
-//int Board::removePrey(int row, int col){
-int Board::removePrey(int preyIndex){
-  return 0;
+//will remove the prey from the vector.
+//Returns the prey's health
+//Or -1 if it couldn't be found.
+int Board::removePrey(int row, int col){
+  int health;
+  for(int i =0; i < m_prey.size(); i++){
+    //Found the prey, remove it
+    if((m_prey[i].getRow() == row)&&(m_prey[i].getCol() == col)){
+      health = m_prey[i].getHealth();
+      m_prey.erase(m_prey.begin() + i);
+      return health;
+    }
+  }
+  cout<<"Error! Couldn't find the desired prey to remove!"<<endl;
+  return -1;
 }
 
 int Board::numPrey(){

@@ -64,8 +64,7 @@ class Board: public Parent{
     void update();
     //void preyMove(int*, int*);//
     bool move (int &, int &);
-    //int removePrey(int, int);
-    int removePrey(int );
+    int removePrey(int, int);
     int numPrey();
     int numPredators();
 };
