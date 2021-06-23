@@ -279,21 +279,28 @@ void Board::update(){
 //If the predator has a prey available for consumption,
 //Changes the arguments to the prey's location and returns true
 //Otherwise, returns false.
-  bool Board::moveOrEat(int &row, int &col, int findMe){
+bool Board::moveOrEat(int &row, int &col, int findMe){
   int r = row;
   int c = col;
-  for(int y = -1; y <2;y++ ){
-    for(int x = -1; x < 2; x++){
-      if((y+r) < 0 || (y+r) >= m_yDim ){
-        continue;
+  vector<int> checkedRows;
+  vector<int> checkedCols;
+  int checkRow, checkCol;
+  bool alreadyChecked = false;
+  while(checkedRows.size() <=8){
+    checkRow = rand()%4 -1;
+    checkCol = rand()%4 -1;
+    alreadyChecked = false;
+    for(int i =0; i < checkedRows.size(); i++){
+      if((checkedRows[i] == checkRow)&(checkedCols[i]==checkCol)){
+        alreadyChecked = true;
       }
-      if((x+c)<0 || (x+c) >= m_xDim){
-
-        continue;
-      }
-      if(m_board[y+r][x+c] == findMe){
-        row = y + r;
-        col = x + c;
+    }
+    if(!alreadyChecked){
+      checkedRows.push_back(checkRow);
+      checkedCols.push_back(checkCol);
+      if(m_board[checkRow][checkCol] == findMe ){
+        row = checkRow;
+        col = checkCol;
         return true;
       }
     }
