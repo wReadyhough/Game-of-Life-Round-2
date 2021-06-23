@@ -1,3 +1,4 @@
+
 #include "parent.h"
 //0/O is Prey 1/X is Predator
 //------Parent Stuff------//
@@ -286,27 +287,60 @@ bool Board::moveOrEat(int &row, int &col, int findMe){
   vector<int> checkedCols;
   int checkRow, checkCol;
   bool alreadyChecked = false;
-  while(checkedRows.size() <=8){
-    checkRow = rand()%4 -1;
-    checkCol = rand()%4 -1;
+  checkedRows.push_back(0);
+  checkedCols.push_back(0);
+  //Randmoly generate vectors of positions to check
+  while(checkedRows.size() <9){
+    checkRow = ((rand()%4) -1)+r;
+    checkCol = ((rand()%4) -1)+c;
     alreadyChecked = false;
-    for(int i =0; i < checkedRows.size(); i++){
-      if((checkedRows[i] == checkRow)&(checkedCols[i]==checkCol)){
+    for(int i = 0; i < checkedRows.size(); i++){
+      if((checkedRows[i] == checkRow)&&(checkedCols[i]==checkCol)){
         alreadyChecked = true;
       }
     }
-    if(!alreadyChecked){
+    if(alreadyChecked == false){
       checkedRows.push_back(checkRow);
       checkedCols.push_back(checkCol);
-      if(m_board[checkRow][checkCol] == findMe ){
-        row = checkRow;
-        col = checkCol;
+    }  
+    
+  }
+
+  //check through the vectors.
+  for(int i = 0; i < checkedRows.size(); i++){
+    if((checkedRows[i] < 0)||(checkedRows[i] >= m_yDim)){
+      continue;
+    }
+    if((checkedCols[i] < 0)||(checkedCols[i] >=m_xDim)){
+      continue;
+    }
+    if(m_board[checkedRows[i]][checkedCols[i]] == findMe){
+      row = checkedRows[i];
+      col = checkedCols[i];
+      return true;
+    }
+  }
+
+  return false;
+}
+/*
+  for(int y = -1; y <2;y++ ){
+    for(int x = -1; x < 2; x++){
+      if((y+r) < 0 || (y+r) >= m_yDim ){
+        continue;
+      }
+      if((x+c)<0 || (x+c) >= m_xDim){
+
+        continue;
+      }
+      if(m_board[y+r][x+c] == findMe){
+        row = y + r;
+        col = x + c;
         return true;
       }
     }
   }
-  return false;
-}
+*/
 
 
 

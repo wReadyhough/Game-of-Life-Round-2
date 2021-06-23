@@ -4,7 +4,7 @@
 
 int main(){
   srand(time(NULL));
-  int rows = 5, cols = 5, numPred = 10, numPrey = 10;
+  int rows = 20, cols = 20, numPred = 10, numPrey = 20;
   /*string defaults = "yes";
   cout<<"Do you want to use default values (yes or no): "<<endl;
   cin>>defaults;
